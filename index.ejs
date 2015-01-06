@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%=title%></title>
+    <meta charset="utf-8">
+	<link rel="stylesheet" type="text/css" href="/styles.css">
+	<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Peralta">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var socket = io.connect('http://192.168.1.101:3000');
+	  
+	  socket.on('connect',function(){
+		socket.emit('informRoom',prompt("What's your name?"));
+	  });
+	  
+	  socket.on('chatConn',function(usernam){
+		$('#chatbox').append('<br/>'+usernam+'Connected to the chat room');
+	  });
+      
+	  socket.on('userLeft',function(username){
+		$('#chatbox').append('<br/>'+username+' Left the chat');
+	  });
+	  
+	  socket.on('updateChat',function(user,message){
+		$('#chatbox').append('<br/>'+user+':'+message);
+	  });	
+            
+      $(document).ready(function() {
+      
+              
+        $('#send').click(function() {
+          var msg = $('#message').val();
+          socket.emit('postMessage', msg);
+		  $('#message').val("");
+          });      
+		  
+        socket.on('error', function(err) {
+          addMessage('error: ' + err);
+        });
+      });
+    </script>
+  </head>
+  <body>
+  <div>
+  <div id="chatbox" style="float:left;font-family:tahoma;font-size:12px;width:400px;border:1px teal solid;height:225px;color:black;overflow:scroll;"></div>
+	<div style="width:400px;height:225px;border:1px teal solid;overflow:scroll;margin-left:1.85%;"> 
+	<script type="text/javascript"src="http://www.freshcontent.net/us_news_feed.php"></script> </div>
+</div>
+	<input id="message" type="text" style=";font-family:tahoma;font-size:12px;width:325px;border:1px teal solid;color:black;"><button id="send">Send</button>
+ </body>
+</html>
